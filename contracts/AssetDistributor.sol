@@ -20,6 +20,12 @@ contract AssetDistibutor {
 	function checkContractBalance() external view returns (uint) {
 		return address(this).balance;
 	}
+	
+	function witchDrawToAccount(address payable addr, uint amount) external {
+		require(msg.sender == owner, "Only owner can withdraw");
+		require(amount <= address(this).balance, "Not enough balance");
+		addr.transfer(amount);
+	}
 
 
 }
