@@ -19,14 +19,7 @@ app.get('/', async (req, res) => {
     });
   });
 
-  app.get('/api/v1/contract', async (req, res) => {
-    res.send(JSON.parse(process.env.ABI));
-  });
-// app.post('/register', async (req, res) => {
-//   let username = req.body.username;
-//   let email = req.body.email;
-//   let password = req.body.password;
-// });
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
