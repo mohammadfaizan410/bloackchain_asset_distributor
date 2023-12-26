@@ -3,6 +3,15 @@ import React from 'react';
 import Web3 from 'web3';
 import ABI from "./abi.json";
 import contract_address from './contract.json';
+import Sidebar from './components/sidebar';
+import Investment from './components/investment';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Portfolio from './components/portfolio';
+import Profile from './components/profile';
+import Settings from './components/settings';
+import { useSelector } from 'react-redux';
+import Register from './components/register';
+import Login from './components/login';
 
 function App() {
   const [myBalance, setMyBalance] = React.useState(0);
@@ -16,38 +25,43 @@ function App() {
     }
   }, [account]);
 
-  window.ethereum.on('accountsChanged', function (accounts) {
-    setAccount(accounts[0]);
-  });
+  const user = useSelector(state => state.user.user);
+  console.log(user);
   
   return (
+    user === undefined ?
+    <BrowserRouter>
+    <Routes>
+    <Route path='/' element={<Register/>}/>
+    <Route path='/login' element={<Login />}/>
+    </Routes>
+    </BrowserRouter>
+    :
+    <BrowserRouter>
     <div className="App">
-      <div>
-        {
-          account ?
-          <div className='investment-form'>
-            <label>Investment Amount:</label>
-            <input type='number' name='investmentAmount' placeholder='ETH'/>
-            <button type='button' onClick={() =>{
-                sendBalanceToContract(account, abi, contractAddress);
-            }}>Invest</button>
-            <h1>Your balance with us: {myBalance}</h1>
-          </div>
-          :
-          <button className='metamask-connect' onClick={()=>connectMetaMaskAccount()}>
-          Connect MetaMask
-        </button>
-        }
-      </div>
+            <div>
+            <Sidebar/>
+            <div className='main-content'>
+            <Routes>
+              <Route path='/' element={<Investment/>}/>
+              <Route path='/portfolio' element={<Portfolio />}/>
+              <Route path='/profile' element={<Profile />}/>
+              <Route path='/settings' element={<Settings />}/>
+            </Routes>
+              </div>
+              </div>
     </div>
+    </BrowserRouter>
   );
   
 
-  function connectMetaMaskAccount(){
+  function connectWalletAccount(){
     if(window.ethereum){
       window.ethereum.request({method: 'eth_requestAccounts'})
       .then(accounts => {
-        setAccount(accounts[0]);
+        setInterval(() => {
+          setAccount(accounts[0]);
+        }, 1000);
       })
       .catch(err => console.log(err));
     }
